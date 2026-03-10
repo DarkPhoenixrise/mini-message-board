@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Mini Message Board</title>
+</head>
+
+<body>
+
+<h1>Message Board</h1>
+
+<input id="msg" placeholder="Enter message">
+<button onclick="sendMessage()">Send</button>
+
+<ul id="list"></ul>
+
+<script>
+
+async function loadMessages() {
+
+    const res = await fetch("/messages");
+    const data = await res.json();
+
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+
+    data.forEach(msg => {
+        const li = document.createElement("li");
+        li.innerText = msg;
+        list.appendChild(li);
+    });
+}
+
+async function sendMessage() {
+
+    const text = document.getElementById("msg").value;
+
+    await fetch("/messages", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ text })
+    });
+
+    loadMessages();
+}
+
+loadMessages();
+
+</script>
+
+</body>
+</html>
