@@ -1,7 +1,6 @@
 const express = require("express");
 
 const app = express();
-const PORT = 3000;
 
 app.use(express.json());
 app.use(express.static("public"));
@@ -9,7 +8,7 @@ app.use(express.static("public"));
 let messages = [];
 
 app.get("/",function(req,res){
-    res.sendFile("D:\Tanishq activities\Projects\mini-message-board\public\index.html");
+    res.sendFile(path.join(__dirname,"public","index.html"));
 })
 app.get("/messages", function(req, res){
     res.json(messages);
@@ -23,6 +22,4 @@ app.post("/messages", function(req, res){
     });
 });
 
-app.listen(PORT, function(){
-    console.log(`Server running on port ${PORT}`);
-});
+module.exports=app;
