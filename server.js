@@ -8,7 +8,9 @@ app.use(express.static("public"));
 
 let messages = [];
 
-
+app.get("/",function(req,res){
+    res.sendFile("D:\Tanishq activities\Projects\mini-message-board\public\index.html");
+})
 app.get("/messages", function(req, res){
     res.json(messages);
 });
