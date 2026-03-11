@@ -31,22 +31,24 @@ async function loadMessages() {
     });
 }
 
-async function sendMessage() {
-
-    const text = document.getElementById("msg").value;
-
-    await fetch("/messages", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ text })
-    });
-
-    loadMessages();
+async function sendMessage(msg) {
+  const res = await fetch("/api/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text: msg })
+  });
+  
+  const data = await res.json(); // <- parses { success: true }
+  
+  if (data.success) {
+    console.log("Message sent successfully!");
+    await loadMessages(); // fetch and display messages
+  } else {
+    console.log("Failed to send message");
+  }
 }
 
-loadMessages();
+
 
 </script>
 
