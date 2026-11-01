@@ -2,55 +2,64 @@
 <html>
 
 <head>
-<title>Mini Message Board</title>
+    <title>Mini Message Board</title>
 </head>
 
 <body>
 
-<h1>Message Board</h1>
+    <h1>Message Board</h1>
 
-<input id="msg" placeholder="Enter message">
-<button onclick="sendMessage()">Send</button>
+    <!-- 1. Added a standard text type for the input field -->
+    <input type="text" id="msg" placeholder="Enter message">
+    <!-- 2. The onclick handler now calls the function without passing undefined parameters -->
+    <button onclick="sendMessage()">Send</button>
 
-<ul id="list"></ul>
+    <ul id="list"></ul>
 
-<script>
+    <script>
+        // Automatically load messages when the page loads
+        window.onload = loadMessages;
 
-async function loadMessages() {
+        async function loadMessages() {
+            const res = await fetch("/messages");
+            const data = await res.json();
 
-    const res = await fetch("/messages");
-    const data = await res.json();
+            const list = document.getElementById("list");
+            list.innerHTML = "";
 
-    const list = document.getElementById("list");
-    list.innerHTML = "";
+            data.forEach(msg => {
+                const li = document.createElement("li");
+                li.innerText = msg;
+                list.appendChild(li);
+            });
+        }
 
-    data.forEach(msg => {
-        const li = document.createElement("li");
-        li.innerText = msg;
-        list.appendChild(li);
-    });
-}
+        async function sendMessage() {
+            // 3. Grab the input element and extract its current text value
+            const inputElement = document.getElementById("msg");
+            const messageText = inputElement.value;
 
-async function sendMessage(msg) {
-  const res = await fetch("/api/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text: msg })
-  });
-  
-  const data = await res.json(); // <- parses { success: true }
-  
-  if (data.success) {
-    console.log("Message sent successfully!");
-    await loadMessages(); // fetch and display messages
-  } else {
-    console.log("Failed to send message");
-  }
-}
+            // Optional: Prevent sending empty messages
+            if (!messageText.trim()) return;
 
-
-
-</script>
+            // 4. Corrected endpoint URL from "/api/messages" to "/messages" to match app.js
+            const res = await fetch("/messages", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: messageText })
+            });
+            
+            const data = await res.json();
+            
+            if (data.success) {
+                console.log("Message sent successfully!");
+                inputElement.value = ""; // Clear the input box after sending
+                await loadMessages();    // Refresh the list immediately
+            } else {
+                console.log("Failed to send message");
+            }
+        }
+    </script>
 
 </body>
 </html>
